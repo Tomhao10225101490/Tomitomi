@@ -26,3 +26,7 @@ Browser assertions include 60+ video cards, search result count, actual playing 
 Earlier failures were real: seed FFmpeg spawning required cloud execution permissions; Prisma engine fetch was denied; simultaneous dev/build corrupted generated Next outputs; a FFmpeg filter quoting error failed upload processing. Corrected workflow stops the server during builds and uses a separate permitted worker. The final run records two passed Playwright tests in 10.4 seconds. No assertions were deleted to hide failures.
 
 This validates the documented local workflow, not every item in the original specification. See KNOWN_LIMITATIONS.md for unimplemented items and production gaps.
+
+## Repository demonstration recording
+
+A subsequent real Chromium recording completed all its assertions with no page-level JavaScript exceptions. The desktop MP4 is 54.88 seconds at 1440×900; the mobile MP4 is 9.76 seconds at 390×844. Both are H.264 and passed complete FFmpeg decoding. This recording includes a newly uploaded video becoming ready and actually playing, along with authenticated history and interaction persistence. See `docs/acceptance/README.md` for the approximate timeline and `scripts/record-acceptance.mjs` for reproduction. ESLint was rerun successfully after adding the script. This supplements the previous automated test report without expanding its original scope claims.

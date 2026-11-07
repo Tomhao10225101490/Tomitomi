@@ -1,5 +1,7 @@
 # TomTube
 
+[查看仓库首页截图与验收视频](../README.md) · [录制说明](docs/acceptance/README.md)
+
 Your World. Your Videos. An independent local video-sharing application, not affiliated with Google or YouTube. Seeded channels, view counts, comments and artwork are explicitly fictional demo content.
 
 ## Run

@@ -1,0 +1,119 @@
+{
+  "recordedAt": "2026-11-07T00:56:36.130Z",
+  "source": "Actual Chromium browser video recording; no simulated pages or frame synthesis",
+  "desktopViewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "mobileViewport": {
+    "width": 390,
+    "height": 844
+  },
+  "desktopSteps": [
+    {
+      "seconds": 1,
+      "label": "Homepage: database-backed video feed"
+    },
+    {
+      "seconds": 4,
+      "label": "Dark appearance"
+    },
+    {
+      "seconds": 8,
+      "label": "Live search suggestions"
+    },
+    {
+      "seconds": 9,
+      "label": "Database search results"
+    },
+    {
+      "seconds": 12,
+      "label": "Actual HTML5 media playback"
+    },
+    {
+      "seconds": 16,
+      "label": "Local demo account sign-in"
+    },
+    {
+      "seconds": 18,
+      "label": "Persistent video-like interaction"
+    },
+    {
+      "seconds": 19,
+      "label": "Persistent channel-subscription toggle"
+    },
+    {
+      "seconds": 20,
+      "label": "Comment persisted and displayed"
+    },
+    {
+      "seconds": 23,
+      "label": "Creator channel with actual videos"
+    },
+    {
+      "seconds": 26,
+      "label": "Original portrait Shorts"
+    },
+    {
+      "seconds": 29,
+      "label": "Switch to another distinct Short"
+    },
+    {
+      "seconds": 32,
+      "label": "Upload workflow"
+    },
+    {
+      "seconds": 34,
+      "label": "Selected actual local MP4, title and description"
+    },
+    {
+      "seconds": 36,
+      "label": "Server accepted upload for asynchronous processing"
+    },
+    {
+      "seconds": 38,
+      "label": "Creator Studio and processing queue"
+    },
+    {
+      "seconds": 40,
+      "label": "FFmpeg worker completed: uploaded video is ready"
+    },
+    {
+      "seconds": 43,
+      "label": "Newly uploaded and transcoded video actually plays"
+    },
+    {
+      "seconds": 49,
+      "label": "Authenticated viewing history"
+    },
+    {
+      "seconds": 51,
+      "label": "Persisted private playlists"
+    },
+    {
+      "seconds": 53,
+      "label": "Desktop recording complete; no page-level JavaScript exceptions"
+    }
+  ],
+  "pageErrors": [],
+  "assertions": "All recording script assertions completed successfully",
+  "audio": "Silent screen recording; playback was muted",
+  "mediaValidation": {
+    "desktop": {
+      "durationSeconds": 54.88,
+      "width": 1440,
+      "height": 900,
+      "codec": "h264",
+      "bytes": 2365985,
+      "fullDecode": "PASS"
+    },
+    "mobile": {
+      "durationSeconds": 9.76,
+      "width": 390,
+      "height": 844,
+      "codec": "h264",
+      "bytes": 167582,
+      "fullDecode": "PASS"
+    }
+  }
+}

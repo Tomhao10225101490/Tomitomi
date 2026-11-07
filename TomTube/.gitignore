@@ -20,3 +20,4 @@ logs/*
 !logs/unit.log
 !logs/e2e.log
 !logs/seed.log
+docs/acceptance/*.webm
