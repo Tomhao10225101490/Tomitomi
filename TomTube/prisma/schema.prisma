@@ -1,0 +1,116 @@
+generator client {
+ provider = "prisma-client-js"
+ engineType = "client"
+}
+datasource db {
+ provider = "sqlite"
+ url = env("DATABASE_URL")
+}
+model User {
+ id String @id @default(cuid())
+ email String @unique
+ username String @unique
+ name String
+ password String
+ bio String @default("")
+ avatar String @default("")
+ banner String @default("")
+ createdAt DateTime @default(now())
+}
+model Session {
+ id String @id
+ userId String
+ expires DateTime
+ @@index([userId])
+}
+model Video {
+ id String @id @default(cuid())
+ userId String
+ title String
+ description String
+ category String
+ tags String @default("")
+ thumbnail String
+ source String
+ duration Float
+ width Int @default(1280)
+ height Int @default(720)
+ views Int @default(0)
+ visibility String @default("public")
+ status String @default("ready")
+ demo Boolean @default(false)
+ createdAt DateTime @default(now())
+ @@index([category, visibility, createdAt])
+ @@index([userId])
+}
+model VideoAsset {
+ id String @id @default(cuid())
+ videoId String
+ path String
+ kind String
+ @@index([videoId])
+}
+model Comment {
+ id String @id @default(cuid())
+ videoId String
+ userId String
+ parentId String?
+ body String
+ createdAt DateTime @default(now())
+ @@index([videoId, createdAt])
+}
+model Like {
+ id String @id @default(cuid())
+ userId String
+ targetId String
+ kind String @default("video")
+ value Int @default(1)
+ @@unique([userId,targetId,kind])
+}
+model Subscription {
+ id String @id @default(cuid())
+ userId String
+ channelId String
+ @@unique([userId,channelId])
+}
+model Playlist {
+ id String @id @default(cuid())
+ userId String
+ name String
+ @@index([userId])
+}
+model PlaylistItem {
+ id String @id @default(cuid())
+ playlistId String
+ videoId String
+ position Int
+ @@unique([playlistId,videoId])
+}
+model WatchHistory {
+ id String @id @default(cuid())
+ userId String
+ videoId String
+ progress Float @default(0)
+ updatedAt DateTime @updatedAt
+ @@unique([userId,videoId])
+}
+model Notification {
+ id String @id @default(cuid())
+ userId String
+ body String
+ read Boolean @default(false)
+ createdAt DateTime @default(now())
+}
+model VideoProcessingJob {
+ id String @id @default(cuid())
+ userId String
+ title String
+ description String
+ category String
+ visibility String
+ file String
+ status String @default("queued")
+ error String @default("")
+ videoId String?
+ createdAt DateTime @default(now())
+}

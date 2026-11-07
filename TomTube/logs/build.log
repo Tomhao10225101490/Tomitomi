@@ -1,0 +1,30 @@
+
+> tomtube@1.0.0 build
+> next build
+
+   ▲ Next.js 15.5.12
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 2.1s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/3) ...
+ ✓ Generating static pages (3/3)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /_not-found                            995 B         103 kB
+├ ƒ /[[...page]]                         14.3 kB         116 kB
+├ ƒ /api/[...path]                         126 B         102 kB
+└ ƒ /api/media/[file]                      126 B         102 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/255-ebd51be49873d76c.js         46 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)           1.9 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -1,0 +1,3 @@
+import Database from 'better-sqlite3';
+import {readdirSync,readFileSync} from 'fs';
+const db=new Database('prisma/tomtube.db');db.pragma('journal_mode = WAL');db.pragma('foreign_keys = ON');db.exec('CREATE TABLE IF NOT EXISTS _local_migrations (name TEXT PRIMARY KEY, appliedAt TEXT NOT NULL)');for(const name of readdirSync('prisma/migrations').filter(n=>!n.endsWith('.toml')).sort()){if(!db.prepare('SELECT name FROM _local_migrations WHERE name = ?').get(name)){db.transaction(()=>{db.exec(readFileSync(`prisma/migrations/${name}/migration.sql`,'utf8'));db.prepare('INSERT INTO _local_migrations VALUES (?,?)').run(name,new Date().toISOString())})();console.log('Applied',name)}}db.close();

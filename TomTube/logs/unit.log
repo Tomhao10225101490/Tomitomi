@@ -1,0 +1,14 @@
+
+> tomtube@1.0.0 test
+> vitest run
+
+
+ RUN  v3.1.2 /workspace/Tomitomi/TomTube
+
+ ✓ tests/rules.test.ts (6 tests) 5ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  16:45:08
+   Duration  230ms (transform 40ms, setup 0ms, collect 42ms, tests 5ms, environment 0ms, prepare 63ms)
+

@@ -1,0 +1,933 @@
+# PROJECT TOMTUBE — FULL-STACK YOUTUBE REPLICA
+
+# Role & Mission
+
+你现在是一名世界级全栈软件架构师、Staff Frontend Engineer、Senior Backend Engineer、UI/UX Designer、Video Streaming Engineer 和自动化测试工程师。
+
+你的任务是独立开发一个完整的视频分享网站：
+
+**项目名称：TomTube**
+
+目标：在不冒充 YouTube 官方网站、不复制其商标及未经授权内容的前提下，最大程度还原 YouTube 桌面网站的界面布局、交互细节、功能结构与用户使用体验。
+
+最终交付一个可以真实注册、登录、上传视频、播放视频、搜索视频、管理频道、发表评论、点赞、订阅和查看观看历史的完整 Web 应用。
+
+这不是静态 Demo，不是只做一张首页，也不是展示几个没有功能的按钮。
+
+这是一次完整的 Agent 自主软件开发能力测试。
+
+你必须实际检查环境、创建项目、编写代码、运行数据库、启动服务器、测试 API、打开浏览器检查实际效果，并在最后交付可运行项目。
+
+不要只输出方案。
+
+不要反复询问普通技术选择。
+
+遇到工程问题时自主判断、修复、验证。
+
+所有代码、日志、截图、测试结果和文档必须保存在 TomTube 项目目录。
+
+---
+
+# 1. 核心产品要求
+
+网站名称：TomTube
+
+Slogan：Your World. Your Videos.
+
+默认语言：English
+
+支持中英文界面切换。
+
+视觉目标：
+
+高度接近 YouTube 的现代桌面 Web 界面，尤其强调：
+
+- 页面结构
+- 导航布局
+- 组件尺寸
+- 字体层级
+- 空白间距
+- 缩略图比例
+- 视频播放器布局
+- 评论区
+- 推荐侧边栏
+- Hover 和点击反馈
+- 响应式行为
+- 浅色与深色模式
+
+不要随意设计成赛博朋克、玻璃拟态或过度花哨的 Dashboard。
+
+我需要的是一个真正精致、干净、专业的视频网站。
+
+使用 TomTube 自有品牌，不要直接使用 YouTube Logo 或让用户误以为这是 Google 官方服务。
+
+---
+
+# 2. 技术栈
+
+推荐：
+
+Frontend:
+- Next.js（App Router）
+- React
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Lucide Icons
+
+Backend:
+- Next.js Server Actions / Route Handlers
+- Prisma ORM
+- PostgreSQL
+
+Authentication:
+- Auth.js 或其他成熟的 Session Authentication 方案
+
+Media:
+- HTML5 Video
+- FFmpeg / FFprobe
+- 本地文件存储抽象层
+- 可扩展至 S3-Compatible Object Storage
+
+Testing:
+- Vitest
+- React Testing Library
+- Playwright
+
+由你根据实际环境与稳定性选择兼容版本。
+
+使用可维护的正式工程架构，不要盲目追逐最新版导致依赖冲突。
+
+优先保证可靠运行。
+
+---
+
+# 3. 首页 — 高度还原 YouTube
+
+首页是本项目最高优先级的视觉模块。
+
+必须精细实现。
+
+## 3.1 顶部导航栏
+
+实现固定顶部 Header：
+
+左侧：
+- Hamburger Menu
+- TomTube Logo
+
+中央：
+- Search Input
+- Search Button
+- Voice Search 图标（若无语音识别则提供真实可用的替代交互或明确标记不可用）
+
+右侧：
+- Create / Upload
+- Notifications
+- User Avatar
+- User Dropdown
+
+要求：
+- 高度、边距、图标大小和对齐符合成熟视频平台标准
+- 搜索框支持键盘 Enter
+- 搜索建议
+- 搜索历史
+- Esc 关闭建议
+- 点击其他区域关闭弹出层
+- 完整键盘导航
+
+## 3.2 左侧导航
+
+实现可折叠 Sidebar。
+
+包括：
+
+Home
+Shorts
+Subscriptions
+You
+History
+Playlists
+Your Videos
+Watch Later
+Liked Videos
+
+订阅频道列表。
+
+支持折叠与展开。
+
+路由必须真正可访问。
+
+不允许大量菜单跳到同一空白页面。
+
+## 3.3 视频分类栏
+
+顶部横向分类 Chips：
+
+All
+Music
+Gaming
+Live
+Technology
+Programming
+AI
+Podcasts
+Education
+News
+Sports
+
+点击分类必须改变真实视频列表。
+
+分类栏可以横向滚动。
+
+有清晰的 Active 状态。
+
+## 3.4 视频卡片
+
+每个视频卡片包括：
+
+- 16:9 Thumbnail
+- 时长标签
+- 频道头像
+- 视频标题
+- 频道名称
+- 观看次数
+- 发布时间
+- More Actions 按钮
+
+Hover 时显示自然反馈。
+
+支持：
+- Add to Watch Later
+- Add to Playlist
+- Share
+- Not Interested
+
+首页必须有真实、合理且多样化的数据内容。
+
+不允许出现大量重复的占位标题，例如 Video 1、Video 2。
+
+可以生成本地 Demo 数据，但不能伪装成真实 YouTube 用户数据。
+
+禁止未经授权抓取或使用真实用户私有内容。
+
+缩略图应使用授权资源或自制内容，不能依赖可能失效的第三方热链。
+
+---
+
+# 4. 视频播放页 — 核心模块
+
+路由：
+
+/watch/[videoId]
+
+布局尽可能还原 YouTube 观看页。
+
+左侧主要区域：
+
+Video Player
+Video Title
+Channel Information
+Subscribe Button
+Like / Dislike
+Share
+Save
+Description
+Comments
+
+右侧：
+
+Recommended Videos
+
+## 4.1 视频播放器
+
+实现真正可工作的播放器。
+
+支持：
+
+- Play / Pause
+- 音量控制
+- 静音
+- 进度拖动
+- 缓冲状态
+- 全屏
+- Picture-in-Picture（浏览器支持时）
+- Playback Speed
+- Quality Selection（仅展示实际存在的分辨率）
+- Loop
+- Theater Mode
+- Keyboard Shortcuts
+
+快捷键：
+
+Space / K：播放暂停
+J：后退 10 秒
+L：前进 10 秒
+M：静音
+F：全屏
+T：影院模式
+
+支持记忆播放进度。
+
+视频播放结束后，按设置展示下一个视频。
+
+支持自动播放开关。
+
+## 4.2 视频元数据
+
+显示：
+
+Title
+Channel
+Subscribers
+Views
+Upload Date
+Description
+Tags
+Category
+
+数据来自数据库。
+
+## 4.3 评论系统
+
+支持：
+
+- 发布评论
+- 回复评论
+- 点赞评论
+- 删除自己的评论
+- 编辑自己的评论
+- 排序方式
+- 展开与折叠回复
+
+未登录状态可以阅读评论，但发布评论需要登录。
+
+评论必须真实持久化。
+
+## 4.4 点赞与订阅
+
+点赞必须真实更新数据库。
+
+同一用户不能重复刷赞。
+
+订阅按钮必须随用户状态变化。
+
+页面刷新后状态不能丢失。
+
+---
+
+# 5. 搜索系统
+
+路由：
+
+/results?search_query=...
+
+实现真实搜索：
+
+- 视频标题
+- 描述
+- 标签
+- 频道名称
+
+搜索结果页面支持：
+
+- 按相关性
+- 按上传时间
+- 按观看次数
+- 按视频时长
+- 按分类筛选
+
+搜索必须连接真实数据库查询。
+
+不能只在固定数组中做简单的硬编码展示并冒充完整搜索后端。
+
+可以使用 PostgreSQL Full-Text Search。
+
+增加合理的数据库索引。
+
+搜索无结果时显示专业 Empty State。
+
+---
+
+# 6. 用户与账号系统
+
+实现：
+
+Sign Up
+Sign In
+Sign Out
+User Profile
+Edit Profile
+Change Password
+Avatar Upload
+
+要求：
+
+- 安全密码哈希
+- Session Management
+- 输入校验
+- 合理错误提示
+- 用户权限检查
+- 登录状态持久化
+
+所有需要鉴权的服务端接口必须由服务器验证身份，而不是仅靠前端按钮隐藏。
+
+禁止把密码或访问密钥写入源代码。
+
+---
+
+# 7. 频道系统
+
+路由：
+
+/@username
+
+支持：
+
+- Channel Banner
+- Channel Avatar
+- Channel Name
+- Subscriber Count
+- Channel Description
+- Videos Tab
+- Shorts Tab
+- Playlists Tab
+- About Tab
+
+频道所有者可以：
+
+- 编辑频道资料
+- 上传 Banner
+- 修改频道介绍
+- 管理自己的视频
+- 查看自己的订阅数量
+
+频道页面必须有真实导航与数据。
+
+---
+
+# 8. 视频上传系统
+
+实现：
+
+/upload
+
+以及内容管理页面：
+
+/studio
+
+上传流程：
+
+1. 选择视频文件
+2. 验证格式与大小
+3. 上传进度展示
+4. 使用 FFprobe 获取视频元数据
+5. 使用 FFmpeg 生成缩略图
+6. 保存视频元数据
+7. 设置视频标题
+8. 设置视频描述
+9. 设置可见性
+10. 发布视频
+
+支持 MP4，优先兼容 H.264/AAC。
+
+对于其他格式，可以使用异步转码流程。
+
+不要让视频转码阻塞 Web 请求线程。
+
+必须限制文件大小、处理时间和并发任务，防止资源耗尽。
+
+开发阶段可以使用本地存储，但需要明确文件路径、存储限制和后续扩展策略。
+
+视频上传失败时必须正确清理临时文件和数据库状态。
+
+## 8.1 视频 Studio
+
+实现一个简洁可用的创作者后台。
+
+包括：
+
+- My Videos
+- Edit Metadata
+- Delete Video
+- Visibility
+- Views
+- Likes
+- Comments
+- Upload Status
+
+数据必须真实。
+
+删除操作需要确认，并正确清理关联数据。
+
+---
+
+# 9. Shorts
+
+路由：
+
+/shorts
+
+实现垂直视频浏览界面。
+
+支持：
+
+- 9:16 Video
+- 上下切换
+- 自动暂停非当前视频
+- Like
+- Comments
+- Share
+- Subscribe
+
+可以使用 Demo 短视频进行初始化。
+
+不要重复使用同一个视频冒充所有内容。
+
+---
+
+# 10. 播放列表与个人资料库
+
+实现：
+
+Playlists
+Watch Later
+Liked Videos
+Watch History
+
+支持：
+
+- 创建播放列表
+- 编辑列表名称
+- 添加视频
+- 移除视频
+- 删除列表
+- 调整列表顺序
+
+观看历史：
+
+- 记录观看时间
+- 保存播放进度
+- 支持删除单项
+- 支持清空历史
+
+未登录用户可以使用有限的本地历史，但不能冒充已同步到服务器。
+
+---
+
+# 11. 推荐算法
+
+开发一个可解释、可运行的基础推荐系统。
+
+初期无需深度学习。
+
+可以使用加权排序：
+
+- 分类相关性
+- 用户观看历史
+- 频道订阅关系
+- 视频发布时间
+- 视频热度
+
+对于新用户提供合理的热门与新内容混合推荐。
+
+避免推荐列表中大量重复视频。
+
+推荐结果必须由真实数据和逻辑生成，不能随机硬编码假装是个性化推荐。
+
+文档中明确解释推荐策略及其局限。
+
+---
+
+# 12. 数据库设计
+
+至少包含：
+
+User
+Channel
+Video
+VideoAsset
+Comment
+Like
+Subscription
+Playlist
+PlaylistItem
+WatchHistory
+Notification
+
+根据实际需要补充：
+
+VideoProcessingJob
+Category
+Tag
+RefreshSession 或其他鉴权相关表
+
+所有数据库关系必须有合理的主外键与索引。
+
+防止：
+
+- 重复点赞
+- 重复订阅
+- 跨用户非法修改
+- 孤儿媒体资源
+- 非法播放列表访问
+
+使用 Prisma Migrations。
+
+提供可复现的 Seed 数据。
+
+---
+
+# 13. 视觉设计规范
+
+这是最终评分的重要部分。
+
+请不要把网站做成廉价的学生作业。
+
+必须有专业的视觉质量。
+
+## 13.1 整体设计
+
+默认 Light Theme。
+
+支持 Dark Theme。
+
+基于成熟视频平台的设计语言：
+
+- 干净背景
+- 简洁导航
+- 精细对齐
+- 自然间距
+- 克制的阴影
+- 合理的边角圆角
+- 清晰的内容层级
+
+注意：
+
+我希望首页一眼看上去具有 YouTube 的熟悉感，但品牌是 TomTube。
+
+不需要过度原创的页面布局。
+
+把核心精力放在像素级的间距、卡片比例、布局细节和交互一致性上。
+
+## 13.2 响应式
+
+至少针对：
+
+- 1920 × 1080
+- 1440 × 900
+- 1280 × 800
+- 390 × 844
+
+逐个适配。
+
+手机端必须真正可用，而不是简单把桌面布局压缩。
+
+## 13.3 细节处理
+
+必须包含：
+
+- Skeleton Loading
+- Empty States
+- Error States
+- Toast Notifications
+- Focus Styles
+- Hover States
+- Smooth Transitions
+- Responsive Navigation
+- Lazy Loaded Images
+- Accessible Buttons
+
+缩略图保持 16:9。
+
+头像保持统一比例。
+
+视频标题最多合理行数，避免网格高度混乱。
+
+不要出现横向溢出、文字遮挡和按钮重叠。
+
+---
+
+# 14. 数据与 Demo 内容
+
+为了让网站在第一次打开时就有完整内容，必须初始化有质量的演示数据。
+
+目标：
+
+- 12 个不同频道
+- 60 个不同视频记录
+- 至少 6 个分类
+- 合理的标题和描述
+- 多样化的缩略图
+- 不同上传时间
+- 合理观看次数
+- 有代表性的评论与频道资料
+
+重要：
+
+Seed 生成的观看次数、评论和订阅数据必须明确属于 Demo 数据。
+
+至少准备数个可合法播放的样例视频。
+
+视频来源必须为授权、公共领域、自制或明确可供使用的资源。
+
+不能用无效媒体链接冒充可播放视频。
+
+如果缺少合法素材，优先自动生成简单的原创测试视频及缩略图。
+
+禁止利用未经授权的 YouTube 视频下载来填充素材库。
+
+---
+
+# 15. 安全与质量
+
+必须考虑：
+
+- CSRF 防护
+- XSS 防护
+- SQL 注入防护
+- 安全的文件上传
+- 文件类型与内容验证
+- 上传限流
+- 密码哈希
+- Session Cookie 安全属性
+- 服务端权限验证
+- 非法文件路径访问防护
+- 输入长度限制
+- 合理错误日志
+
+不需要为了本地演示部署复杂的云基础设施，但安全边界要正确。
+
+---
+
+# 16. 自动化测试
+
+请为关键模块添加测试。
+
+Unit Tests：
+
+- 视频搜索
+- 推荐排序
+- 播放进度
+- 点赞唯一性
+- 订阅逻辑
+- 访问权限
+- 数据验证
+
+Integration Tests：
+
+- 注册与登录
+- 视频上传
+- 视频发布
+- 评论发布
+- 订阅与取消订阅
+- 创建播放列表
+- 更新观看历史
+
+E2E Tests：
+
+- 打开首页
+- 搜索视频
+- 点击并播放视频
+- 登录账号
+- 点赞视频
+- 发表评论
+- 订阅频道
+- 上传新视频
+- 打开个人频道
+- 查看观看历史
+
+测试失败必须修复后重新执行。
+
+不要删除失败测试来制造通过率。
+
+---
+
+# 17. 浏览器视觉验收
+
+必须使用真实浏览器检查最终页面。
+
+优先使用 Playwright。
+
+至少保存以下截图：
+
+1. Homepage — Light Mode
+2. Homepage — Dark Mode
+3. Video Watch Page
+4. Search Results
+5. Channel Page
+6. Shorts Page
+7. Upload Page
+8. Creator Studio
+9. Mobile Homepage
+10. Mobile Watch Page
+
+截图必须来自实际运行网站。
+
+不得生成概念图冒充真实页面。
+
+对比当前 YouTube 的公开页面布局，重点检查：
+
+- 导航栏高度
+- Sidebar 宽度
+- 主内容边距
+- 网格列数
+- 视频缩略图
+- 视频卡片排版
+- 播放页面左右比例
+- 评论区域
+- 字体层级
+- 响应式效果
+
+如果外部网站无法访问，可以使用现有参考资料完成设计，并在报告中说明无法核对的部分。
+
+不要因此停止项目。
+
+---
+
+# 18. 工程文档
+
+项目目录必须包含：
+
+README.md
+.env.example
+
+docs/ARCHITECTURE.md
+docs/DATABASE_SCHEMA.md
+docs/API_REFERENCE.md
+docs/IMPLEMENTATION_LOG.md
+docs/TEST_REPORT.md
+docs/VISUAL_ACCEPTANCE.md
+docs/KNOWN_LIMITATIONS.md
+
+至少包含：
+
+- 技术架构说明
+- 数据库设计
+- 实际 API
+- 启动流程
+- 视频处理流程
+- 本地存储结构
+- 测试结果
+- 未完成事项
+
+---
+
+# 19. 工作方式与 Agent 自主执行
+
+你必须按照以下方式工作。
+
+Phase 1：环境检查与架构设计
+
+Phase 2：数据库与认证
+
+Phase 3：完整首页与导航
+
+Phase 4：视频播放、搜索、频道
+
+Phase 5：评论、点赞、订阅、历史记录
+
+Phase 6：上传、转码、Studio
+
+Phase 7：Shorts、播放列表、推荐
+
+Phase 8：UI 精修与响应式
+
+Phase 9：自动化测试、性能检查、视觉验收
+
+Phase 10：最终交付
+
+每阶段必须完成真实代码修改与验证。
+
+在终端持续输出：
+
+- 当前阶段
+- 已完成内容
+- 当前测试结果
+- 下一项工作
+
+不要每完成一个组件就终止工作。
+
+对于影响进度的 Bug，先尝试修复再继续。
+
+上下文不足时使用项目内进度文档保存工作状态，避免重复劳动。
+
+不要因为上下文压缩就忘记功能要求。
+
+所有工作仅限 TomTube 项目目录，不要操作其他项目仓库。
+
+禁止执行破坏性 Git 操作。
+
+---
+
+# 20. 一次性最终验收标准
+
+完成前必须逐项验证：
+
+[ ] 首页布局完整，视觉质量接近成熟视频网站
+[ ] 桌面与移动端可用
+[ ] 浅色与深色主题正常
+[ ] 搜索与搜索建议正常
+[ ] 账号注册、登录、退出正常
+[ ] 视频可实际播放
+[ ] 视频播放控制功能正常
+[ ] 视频上传、处理和发布正常
+[ ] 评论可持久化
+[ ] 点赞和订阅可持久化
+[ ] 频道页面正常
+[ ] 播放列表管理正常
+[ ] 观看历史正确记录
+[ ] Shorts 浏览正常
+[ ] Creator Studio 可用
+[ ] 推荐算法输出真实结果
+[ ] 数据库 Migration 正常
+[ ] Seed 数据正常
+[ ] TypeScript 类型检查通过
+[ ] Lint 通过
+[ ] Unit Tests 通过
+[ ] Integration Tests 通过
+[ ] E2E Tests 通过
+[ ] Production Build 成功
+[ ] 浏览器无明显运行异常
+[ ] 10 张实际运行截图已保存
+[ ] README 可复现启动流程
+
+如果有未完成事项，必须如实报告，不能冒充全部通过。
+
+不要为了通过测试而移除本应实现的功能。
+
+最后必须告诉我：
+
+1. 项目绝对路径
+2. 本地访问 URL
+3. 启动命令
+4. Demo 登录账号（仅用于本地测试）
+5. 已完成的功能
+6. 自动化测试结果
+7. 浏览器截图位置
+8. 未完成内容和已知问题
+
+# FINAL INSTRUCTION
+
+这是一次高难度 Full-Stack Agent Benchmark。
+
+我不会逐个指导你应该如何编码。
+
+你需要像一名真正的高级软件工程师一样，自主完成产品设计、架构规划、编码、调试、运行、测试和交付。
+
+优先保证：
+
+1. 视觉高度还原
+2. 功能真实可用
+3. 项目完整
+4. 代码质量
+5. 稳定性
+6. 用户体验
+
+不要交付静态页面。
+
+不要交付按钮无法使用的 Demo。
+
+不要在没有实际测试的情况下声称项目完成。
+
+**现在直接开始开发 TomTube，持续工作直到最终验收完成，或者遇到无法自行解决的真实环境限制。**

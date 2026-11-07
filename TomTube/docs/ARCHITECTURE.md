@@ -1,0 +1,11 @@
+# Architecture
+
+Next.js 15 App Router / React 19 / TypeScript; custom CSS and Lucide icons. A shared client application handles navigation with browser history; URL paths are served by the optional catch-all App Router page. JSON endpoints use Route Handlers and Prisma. SQLite is an explicit self-contained environment fallback to the recommended PostgreSQL architecture.
+
+Authentication uses bcrypt (cost 12), 256-bit random opaque database sessions with seven-day expiry, HttpOnly / SameSite=Lax cookies and Secure on HTTPS. Password hashes never leave the API. Mutating requests require a matching Origin. Auth endpoints are POST-only and rate limited in the single application process. Server endpoints enforce ownership; client visibility is not authorization. React escapes rendered text, Prisma parameterizes database queries. Profiles accept only locally uploaded media paths; image bytes are decoded and rewritten as WebP by Sharp.
+
+The media worker is a separate long-running process. It claims queued jobs with a conditional update, probes actual streams, limits video duration, transcodes H.264/AAC with FFmpeg, produces a JPEG, creates asset rows and marks the job ready. File paths are generated server-side. The server serves uploaded media with validated opaque file names and byte ranges after checking visibility and session ownership. Storage is currently filesystem-based; replace writes, deletes and range reads with an object-store adapter and signed URLs for S3 deployment.
+
+Recommendations are deterministic: 40 points for categories present in a user's watch history, 30 for subscribed channels, logarithmic view popularity, and a recency term decaying over days. Sorted results are diversified by avoiding the previous two channels where alternatives exist. Cold-start users receive popularity and freshness. No ML or random personalisation claims.
+
+Native browser media controls provide seeking, volume, mute and fullscreen. Extra controls provide playback speed, actual source quality information, loop, picture-in-picture and theater layout. Keyboard shortcuts ignore editable inputs. Local playback progress is written every few seconds, with authenticated progress also persisted to the database.

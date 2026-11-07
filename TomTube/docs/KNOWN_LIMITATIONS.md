@@ -1,0 +1,16 @@
+# Known limitations — honest acceptance scope
+
+- PostgreSQL and Prisma Migrate CLI are not verified. The native schema engine host is blocked; an allowlist addition was saved to environment settings. Current runnable database uses Prisma's official SQLite adapter and checked-in SQL applied by a transactional local runner.
+- English is the default. Chinese switching translates primary navigation/actions/categories; secondary descriptive text is still English.
+- Demo videos are intentionally short original synthetic test footage, not a curated entertainment library. Multiple records in a channel share its original landscape sample. Portrait Shorts use distinct generated assets. This is explicitly demo content.
+- Search uses database substring matching across titles, descriptions, tags and channel names, not PostgreSQL full-text indexing. Recommendation interest is category membership, not advanced preference learning.
+- Player exposes the single actual source resolution, not adaptive bitrate streaming. Native browser controls own transport and buffering. Progress restoration currently prefers this browser's local value; server history is saved but cross-device progress restoration is not yet connected.
+- Guest playback progress is local; a guest watch-history library is not yet exposed. Playlists are private and have no public channel publishing; the channel Playlists tab accurately shows an empty state. Move-up ordering is basic rather than drag-and-drop.
+- Notifications have persisted schema/read display but no complete event-generation or mark-read workflow. Voice search is explicitly unavailable with a truthful alternative prompt.
+- Shorts are independent portrait clips with next/previous buttons; swipe navigation is not implemented. Playback ends autoplay the first other recommended video, rather than maintaining a sophisticated queue.
+- Auth is local opaque-session authentication, not Auth.js/OAuth. No password reset, email verification, account deletion, distributed rate limiter or production observability. Rate limiting is per process and unsuitable behind an untrusted forwarded-header proxy without configuration.
+- Multipart requests are buffered, and the platform must enforce an incoming body-size limit before public deployment. Uploaded media reads buffer requested ranges. Storage has per-upload limits but no total per-user disk quota or garbage collection of unused profile images.
+- Worker process crashes can leave processing jobs requiring administrative retry; a durable external queue, lease recovery and object storage remain deployment work. Do not run many worker instances if total concurrency must remain one.
+- View counts increment when watch metadata is fetched; they are not fraud-resistant analytics. Refreshing interaction state can increment demo views.
+- Client routing and most UI reside in a large shared module; additional component separation and accessibility auditing would improve long-term maintenance. Browser screenshots validate layout, not a pixel-perfect external reference comparison.
+- Do not deploy the seed credentials or local HTTP setup as a production service. TLS, reverse proxy trust, resource quotas, backups and stronger abuse prevention are deployment requirements.

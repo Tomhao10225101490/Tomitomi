@@ -1,0 +1,41 @@
+import {test,expect,request as createRequest} from '@playwright/test';
+const origin={'Origin':'http://127.0.0.1:3000'};
+test('API: authentication, authorization, persistent interactions, upload pipeline',async({request})=>{
+ const suffix=Date.now();const email=`test${suffix}@tomtube.local`;
+ expect((await request.post('/api/playlist',{headers:origin,data:{name:'No access'}})).status()).toBe(401);
+ expect((await request.post('/api/auth/register',{headers:{Origin:'https://evil.example'},data:{}})).status()).toBe(403);
+ const register=await request.post('/api/auth/register',{headers:origin,data:{email,password:'TestPassword!2026',username:`test${suffix}`,name:'Integration tester'}});expect(register.ok()).toBeTruthy();
+ const list=await (await request.get('/api/videos?q=workspace')).json();expect(list.length).toBeGreaterThan(0);const id=list[0].id;
+ const baseline=(await (await request.get('/api/watch/'+id)).json()).likes;
+ for(let i=0;i<3;i++)expect((await request.post('/api/like',{headers:origin,data:{id}})).ok()).toBeTruthy();
+ let watch=await (await request.get('/api/watch/'+id)).json();expect(watch.likes).toBe(baseline+1);
+ for(let i=0;i<3;i++)expect((await request.post('/api/subscribe',{headers:origin,data:{id:watch.userId}})).ok()).toBeTruthy();
+ expect((await request.post('/api/comment',{headers:origin,data:{videoId:id,body:'A real persistent integration comment'}})).ok()).toBeTruthy();
+ watch=await (await request.get('/api/watch/'+id)).json();expect(watch.comments.some((c:any)=>c.body==='A real persistent integration comment')).toBeTruthy();expect(watch.subscribed).toBe(true);
+ expect((await request.patch('/api/video/'+id,{headers:origin,data:{title:'forbidden'}})).status()).toBe(403);
+ const pl=await (await request.post('/api/playlist',{headers:origin,data:{name:'Integration collection'}})).json();expect((await request.post('/api/playlist',{headers:origin,data:{id:pl.id,videoId:id}})).ok()).toBeTruthy();
+ await request.post('/api/history',{headers:origin,data:{id,progress:7}});let library=await (await request.get('/api/library')).json();expect(library.history[0].progress).toBe(7);expect(library.items.some((i:any)=>i.videoId===id)).toBeTruthy();
+ const fs=await import('fs');const upload=await request.post('/api/upload',{headers:origin,multipart:{title:'Integration upload',description:'Original FFmpeg test source',category:'Education',visibility:'private',file:{name:'sample.mp4',mimeType:'video/mp4',buffer:fs.readFileSync('public/media/sample-0.mp4')}}});expect(upload.status()).toBe(202);const job=await upload.json();
+ await expect.poll(async()=>{library=await (await request.get('/api/library')).json();return library.jobs.find((j:any)=>j.id===job.id)?.status},{timeout:60000}).toBe('ready');
+ const published=library.jobs.find((j:any)=>j.id===job.id).videoId;const details=await (await request.get('/api/watch/'+published)).json();expect(details.visibility).toBe('private');const anonymous=await createRequest.newContext({baseURL:'http://127.0.0.1:3000'});expect((await anonymous.get(details.source)).status()).toBe(404);expect((await anonymous.get('/api/watch/'+published)).status()).toBe(404);await anonymous.dispose();expect((await request.get(details.source,{headers:{Range:'bytes=0-99'}})).status()).toBe(206);expect((await request.patch('/api/video/'+published,{headers:origin,data:{title:'Published integration upload',description:'Test',visibility:'public'}})).ok()).toBeTruthy();expect((await (await request.get('/api/watch/'+published)).json()).visibility).toBe('public');
+ await request.delete('/api/video/'+published,{headers:origin,data:{}});expect((await request.get(details.source)).status()).toBe(404);
+ const image=await request.post('/api/image',{headers:origin,multipart:{file:{name:'avatar.svg',mimeType:'image/svg+xml',buffer:Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="teal"/></svg>')}}});expect(image.ok()).toBeTruthy();const avatar=(await image.json()).url;expect((await request.post('/api/profile',{headers:origin,data:{name:'Updated tester',avatar}})).ok()).toBeTruthy();expect((await (await request.get('/api/me')).json()).avatar).toBe(avatar);
+ await request.post('/api/auth/logout',{headers:origin,data:{}});expect(await (await request.get('/api/me')).json()).toBeNull();expect((await request.post('/api/auth/login',{headers:origin,data:{email,password:'TestPassword!2026'}})).ok()).toBeTruthy();
+});
+test('browser: homepage, real playback, account interactions and responsive screenshots',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/');await expect.poll(()=>page.locator('.video-card').count()).toBeGreaterThanOrEqual(60);await page.setViewportSize({width:1440,height:900});await page.screenshot({path:'screenshots/01-home-light.png',fullPage:false});
+ await page.getByRole('button',{name:'Dark appearance',exact:false}).click();await page.screenshot({path:'screenshots/02-home-dark.png'});await page.getByRole('button',{name:'Light appearance',exact:false}).click();
+ await page.getByRole('textbox',{name:'Search',exact:true}).fill('workspace');await page.getByRole('textbox',{name:'Search',exact:true}).press('Enter');await expect(page.locator('.results-list .video-card')).toHaveCount(1);await page.screenshot({path:'screenshots/04-search.png'});
+ await page.locator('.thumbnail').first().click();await expect(page.locator('video')).toBeVisible();await page.locator('video').evaluate(async(v:any)=>{v.muted=true;await v.play()});await expect.poll(()=>page.locator('video').evaluate((v:any)=>v.currentTime)).toBeGreaterThan(0);await page.screenshot({path:'screenshots/03-watch.png'});
+ await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.getByLabel('Email',{exact:true}).fill('demo@tomtube.local');await page.getByLabel('Password',{exact:true}).fill('TomTubeDemo!2026');await page.locator('.modal').getByRole('button',{name:'Sign in',exact:true}).click();await expect(page.locator('.modal')).toHaveCount(0);
+ await page.getByRole('button',{name:'Like video',exact:true}).click();await page.getByRole('textbox',{name:'Add a comment',exact:true}).fill('A browser-tested comment');await page.getByRole('button',{name:'Comment',exact:true}).click();await expect(page.getByText('A browser-tested comment').first()).toBeVisible();
+ await page.locator('.channel-name').click();await expect(page.locator('.channel-profile')).toBeVisible();await page.screenshot({path:'screenshots/05-channel.png'});
+ await page.goto('/shorts');await expect(page.locator('.short-frame video')).toBeVisible();await page.screenshot({path:'screenshots/06-shorts.png'});
+ await page.goto('/upload');await expect(page.locator('.dropzone')).toBeVisible();await page.screenshot({path:'screenshots/07-upload.png'});
+ await page.locator('input[type=file]').setInputFiles('public/media/sample-1.mp4');await page.getByRole('textbox',{name:'Title',exact:true}).fill('Browser uploaded original');await page.getByRole('button',{name:'Upload & publish',exact:true}).click();await expect(page.getByRole('status')).toContainText('Upload received');
+ await page.goto('/studio');await expect(page.getByRole('heading',{name:'Your creative space'})).toBeVisible();await page.screenshot({path:'screenshots/08-studio.png'});
+ await page.goto('/history');await expect(page.getByRole('heading',{name:'Watch history'})).toBeVisible();
+ for(const width of [1920,1280,390]){await page.setViewportSize({width,height:width===390?844:width===1280?800:1080});await page.goto('/');await expect(page.locator('.video-card').first()).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();if(width!==390)await page.screenshot({path:`screenshots/extra-home-${width}.png`});if(width===390)await page.screenshot({path:'screenshots/09-mobile-home.png'});}
+ await page.locator('.thumbnail').first().click();await expect(page.locator('video')).toBeVisible();await page.screenshot({path:'screenshots/10-mobile-watch.png'});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();expect(errors).toEqual([]);
+});
